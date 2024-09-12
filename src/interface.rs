@@ -473,20 +473,16 @@
 #![deny(missing_docs)]
 #![no_std]
 
-extern crate cortex_m_rt_macros as macros;
-
 /// The 32-bit value the stack is painted with before the program runs.
 // Note: keep this value in-sync with the start-up assembly code, as we can't
 // use const values in `global_asm!` yet.
 #[cfg(feature = "paint-stack")]
 pub const STACK_PAINT_VALUE: u32 = 0xcccc_cccc;
 
-#[cfg(cortex_m)]
 use core::arch::global_asm;
 use core::fmt;
 
 /// Parse cfg attributes inside a global_asm call.
-#[cfg(cortex_m)]
 macro_rules! cfg_global_asm {
     {@inner, [$($x:tt)*], } => {
         global_asm!{$($x)*}
@@ -509,7 +505,6 @@ macro_rules! cfg_global_asm {
 // Calls an optional user-provided __pre_init and then initialises RAM.
 // If the target has an FPU, it is enabled.
 // Finally jumps to the user main function.
-#[cfg(cortex_m)]
 cfg_global_asm! {
     ".cfi_sections .debug_frame
      .section .Reset, \"ax\"
@@ -731,7 +726,6 @@ pub use macros::interrupt;
 ///     }
 /// }
 /// ```
-pub use macros::entry;
 
 /// Attribute to declare an exception handler
 ///
@@ -853,7 +847,6 @@ pub use macros::entry;
 ///
 /// # fn main() {}
 /// ```
-pub use macros::exception;
 
 /// Attribute to mark which function will be called at the beginning of the reset handler.
 ///
@@ -886,7 +879,6 @@ pub use macros::exception;
 /// ```
 ///
 /// [rfc1414]: https://github.com/rust-lang/rfcs/blob/master/text/1414-rvalue_static_promotion.md
-pub use macros::pre_init;
 
 // We export this static with an informative name so that if an application attempts to link
 // two copies of cortex-m-rt together, linking will fail. We also declare a links key in
@@ -1084,12 +1076,12 @@ pub fn heap_start() -> *mut u32 {
 
 // Entry point is Reset.
 #[doc(hidden)]
-#[cfg_attr(cortex_m, link_section = ".vector_table.reset_vector")]
+#[link_section = ".vector_table.reset_vector"]
 #[no_mangle]
 pub static __RESET_VECTOR: unsafe extern "C" fn() -> ! = Reset;
 
 #[doc(hidden)]
-#[cfg_attr(cortex_m, link_section = ".HardFault.default")]
+#[link_section = ".HardFault.default"]
 #[no_mangle]
 pub unsafe extern "C" fn HardFault_() -> ! {
     #[allow(clippy::empty_loop)]
@@ -1114,13 +1106,10 @@ pub enum Exception {
 
     // Not overridable
     // HardFault,
-    #[cfg(not(armv6m))]
     MemoryManagement,
 
-    #[cfg(not(armv6m))]
     BusFault,
 
-    #[cfg(not(armv6m))]
     UsageFault,
 
     #[cfg(armv8m)]
@@ -1128,7 +1117,6 @@ pub enum Exception {
 
     SVCall,
 
-    #[cfg(not(armv6m))]
     DebugMonitor,
 
     PendSV,
@@ -1146,13 +1134,10 @@ extern "C" {
 
     fn HardFault();
 
-    #[cfg(not(armv6m))]
     fn MemoryManagement();
 
-    #[cfg(not(armv6m))]
     fn BusFault();
 
-    #[cfg(not(armv6m))]
     fn UsageFault();
 
     #[cfg(armv8m)]
@@ -1160,7 +1145,6 @@ extern "C" {
 
     fn SVCall();
 
-    #[cfg(not(armv6m))]
     fn DebugMonitor();
 
     fn PendSV();
@@ -1176,7 +1160,7 @@ pub union Vector {
 }
 
 #[doc(hidden)]
-#[cfg_attr(cortex_m, link_section = ".vector_table.exceptions")]
+#[link_section = ".vector_table.exceptions"]
 #[no_mangle]
 pub static __EXCEPTIONS: [Vector; 14] = [
     // Exception 2: Non Maskable Interrupt.
@@ -1186,19 +1170,16 @@ pub static __EXCEPTIONS: [Vector; 14] = [
     // Exception 3: Hard Fault Interrupt.
     Vector { handler: HardFault },
     // Exception 4: Memory Management Interrupt [not on Cortex-M0 variants].
-    #[cfg(not(armv6m))]
     Vector {
         handler: MemoryManagement,
     },
     #[cfg(armv6m)]
     Vector { reserved: 0 },
     // Exception 5: Bus Fault Interrupt [not on Cortex-M0 variants].
-    #[cfg(not(armv6m))]
     Vector { handler: BusFault },
     #[cfg(armv6m)]
     Vector { reserved: 0 },
     // Exception 6: Usage Fault Interrupt [not on Cortex-M0 variants].
-    #[cfg(not(armv6m))]
     Vector {
         handler: UsageFault,
     },
@@ -1209,7 +1190,6 @@ pub static __EXCEPTIONS: [Vector; 14] = [
     Vector {
         handler: SecureFault,
     },
-    #[cfg(not(armv8m))]
     Vector { reserved: 0 },
     // 8-10: Reserved
     Vector { reserved: 0 },
@@ -1218,7 +1198,6 @@ pub static __EXCEPTIONS: [Vector; 14] = [
     // Exception 11: SV Call Interrupt.
     Vector { handler: SVCall },
     // Exception 12: Debug Monitor Interrupt [not on Cortex-M0 variants].
-    #[cfg(not(armv6m))]
     Vector {
         handler: DebugMonitor,
     },
@@ -1236,7 +1215,7 @@ pub static __EXCEPTIONS: [Vector; 14] = [
 // to the default handler
 #[cfg(all(any(not(feature = "device"), test), not(armv6m), not(armv8m)))]
 #[doc(hidden)]
-#[cfg_attr(cortex_m, link_section = ".vector_table.interrupts")]
+#[link_section = ".vector_table.interrupts"]
 #[no_mangle]
 pub static __INTERRUPTS: [unsafe extern "C" fn(); 240] = [{
     extern "C" {
