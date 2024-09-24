@@ -14,7 +14,7 @@ MEMORY {
 SECTIONS {
   .text : {
     LONG(__stack_top);
-    KEEP(*(.vectors.reset_vector));
+    KEEP(*(.vectors.reset_handler));
     *(.text*)
     *(.rodata*)
   } >FLASH
@@ -53,4 +53,4 @@ __bss_start = ADDR(.bss);
 __bss_end   = __bss_start + SIZEOF(.bss);
 
 /* Entry point (for gdb) */
-ENTRY(Reset);
+ENTRY(Reset_Handler);
