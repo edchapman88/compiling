@@ -11,26 +11,10 @@
 
 extern crate panic_halt;
 // mod lib;
-use core::arch::global_asm;
 use core::ptr::{read_volatile, write_volatile};
 // pub(crate) mod interface;
-// pub(crate) mod link_interface;
+pub(crate) mod link_interface;
 // use microbit::{board::Board, hal::prelude::OutputPin};
-
-global_asm!(
-    ".syntax unified
-    
-     .section .vectors
-     .word __stack_top
-     .word Reset
-
-     .text
-     .global Reset
-     .type Reset, %function
-
-    Reset:
-        bl main"
-);
 
 // GPIO
 const GPIO_BASE_P0: u32 = 0x50000000;
