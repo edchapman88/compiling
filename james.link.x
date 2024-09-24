@@ -29,7 +29,6 @@ SECTIONS {
 
   /DISCARD/ :
   {
-    /* Unused exception related info that only wastes space */
     *(.ARM.*);
     *(.comment);
   }
@@ -52,4 +51,4 @@ __bss_start = ADDR(.bss);
 __bss_end   = __bss_start + SIZEOF(.bss);
 
 /* Entry point (for gdb) */
-ENTRY(Reset);
+ENTRY(Reset_Handler);

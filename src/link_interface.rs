@@ -5,7 +5,7 @@ global_asm!(
     
      .section .vectors
      .word __stack_top
-     .word Reset
+     .word Reset_Handler
     .word 0
     .word 0
     .word 0
@@ -23,9 +23,7 @@ global_asm!(
      .zero 4 * 112
 
      .text
-     .global Reset
-     .type Reset, %function
-
-    Reset:
-        bl main"
+     .global Reset_Handler
+     .type Reset_Handler, %function
+"
 );

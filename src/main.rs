@@ -48,7 +48,7 @@ fn uart_send(x: u8) {
     }
 }
 
-#[export_name = "main"]
+#[export_name = "Reset_Handler"]
 pub unsafe extern "C" fn entry_point() {
     //#[cortex_m_rt::entry]
     //fn entry() -> ! {
