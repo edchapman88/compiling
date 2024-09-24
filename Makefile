@@ -20,4 +20,4 @@ hello.bin :
 	-C link-arg=-Tjames.link.x \
 
 clean :
-	rm -r hello*
+	rm -r *.bin *.d *.hex *.o *.s
