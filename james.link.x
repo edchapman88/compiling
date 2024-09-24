@@ -10,9 +10,11 @@ MEMORY {
   CODE_RAM (rwx) : ORIGIN = 0x00800000, LENGTH = 128K 
 }
 
+
 SECTIONS {
   .text : {
-    KEEP(*(.vectors))
+    LONG(__stack_top);
+    KEEP(*(.vectors.reset_vector));
     *(.text*)
     *(.rodata*)
   } >FLASH
@@ -51,4 +53,4 @@ __bss_start = ADDR(.bss);
 __bss_end   = __bss_start + SIZEOF(.bss);
 
 /* Entry point (for gdb) */
-ENTRY(Reset_Handler);
+ENTRY(Reset);

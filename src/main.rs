@@ -12,7 +12,7 @@
 extern crate panic_halt;
 // mod lib;
 use core::ptr::{read_volatile, write_volatile};
-// pub(crate) mod interface;
+//pub(crate) mod interface;
 pub(crate) mod link_interface;
 // use microbit::{board::Board, hal::prelude::OutputPin};
 
@@ -48,7 +48,7 @@ fn uart_send(x: u8) {
     }
 }
 
-#[export_name = "Reset_Handler"]
+#[export_name = "Reset"]
 pub unsafe extern "C" fn entry_point() {
     //#[cortex_m_rt::entry]
     //fn entry() -> ! {
