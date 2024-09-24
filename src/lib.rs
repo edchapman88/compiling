@@ -16,9 +16,11 @@ const COL3: u32 = 31;
 
 pub fn entry_point() {
     unsafe {
+        // Set the 'direction' of the required GPIO pins to be 'output'.
         write_volatile(DIRSET_P0, 1 << ROW3);
         write_volatile(DIRSET_P0, 1 << COL3);
 
+        // Set the column pin low and the corresponding row pin to high to light up that LED.
         write_volatile(OUTCLR_P0, 1 << COL3);
         write_volatile(OUTSET_P0, 1 << ROW3);
     }
