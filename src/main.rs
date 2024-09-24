@@ -3,7 +3,7 @@
 #![no_main]
 
 use compiling::entry_point;
-use core::arch::global_asm;
+//use core::arch::global_asm;
 
 // #[panic_handler] is used to define the behavior of the Rust `panic!` macro (a panic is a fatal exception) in #![no_std] applications.
 // https://doc.rust-lang.org/nomicon/panic-handler.html
@@ -11,15 +11,6 @@ use core::arch::global_asm;
 fn panic_handler(_: &core::panic::PanicInfo) -> ! {
     loop {}
 }
-
-global_asm!(
-    ".syntax unified
-    
-     .text
-     .global Reset_Handler
-     .type Reset_Handler, %function
-"
-);
 
 #[export_name = "Reset_Handler"]
 pub unsafe extern "C" fn reset() {

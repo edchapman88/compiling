@@ -31,6 +31,7 @@ SECTIONS {
 
   /DISCARD/ :
   {
+    *(.debug_*);
     *(.ARM.*);
     *(.comment);
   }
