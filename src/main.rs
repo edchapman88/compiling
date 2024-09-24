@@ -3,7 +3,6 @@
 #![no_main]
 
 use compiling::entry_point;
-//use core::arch::global_asm;
 
 // #[panic_handler] is used to define the behavior of the Rust `panic!` macro (a panic is a fatal exception) in #![no_std] applications.
 // https://doc.rust-lang.org/nomicon/panic-handler.html
@@ -12,11 +11,15 @@ fn panic_handler(_: &core::panic::PanicInfo) -> ! {
     loop {}
 }
 
+// Define the reset handler. Exporting the function with the symbol "Reset_Handler" is not
+// essential.
 #[export_name = "Reset_Handler"]
-pub unsafe extern "C" fn reset() {
+pub fn reset() {
     entry_point();
 }
 
+// Define a pointer to the reset handler function which can be picked up by the linker and included
+// at the correct position in the vector table.
 #[link_section = ".vectors.reset_handler"]
 #[no_mangle]
-pub static __RESET_HANDLER: unsafe extern "C" fn() = reset;
+pub static __RESET_HANDLER: fn() = reset;
