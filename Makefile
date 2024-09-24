@@ -1,5 +1,6 @@
-# Specify the target to cargo so that the dependencies specified in `Cargo.toml` are fetched and built for that target.
-# `--` passes the following flags on to `rustc`.
+# Specify the target to cargo so that the dependencies specified in `Cargo.toml` are fetched and built for that target (e.g. the thumbv7 ARM target with a floating point unit: `thumbv7em-none-eabihf `).
+
+# `--` passes the subsequent flags on to `rustc`.
 # `-o` specifies the name of the output to be the name of this make target (shorthand is `$@`).
 # `-C` are 'codegen' options, documented here: https://doc.rust-lang.org/rustc/codegen-options/index.html
 # `linker=arm-none-eabi-gcc` to use the older default linker `arm-none-eabi-gcc`.
