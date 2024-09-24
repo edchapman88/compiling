@@ -17,7 +17,7 @@ hello.bin :
 	--emit obj=hello.o,asm=hello.s,dep-info=hello.d \
 	-C linker=arm-none-eabi-gcc \
 	-C link-arg=-nostartfiles \
-	-C link-arg=-Tjames.link.x \
+	-C link-arg=-Tlink.x \
 
 clean :
 	rm -r hello*

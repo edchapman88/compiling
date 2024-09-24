@@ -10,9 +10,27 @@
 //}
 
 extern crate panic_halt;
-
+// mod lib;
+use core::arch::global_asm;
 use core::ptr::{read_volatile, write_volatile};
+// pub(crate) mod interface;
+// pub(crate) mod link_interface;
 // use microbit::{board::Board, hal::prelude::OutputPin};
+
+global_asm!(
+    ".syntax unified
+    
+     .section .vectors
+     .word __stack_top
+     .word Reset
+
+     .text
+     .global Reset
+     .type Reset, %function
+
+    Reset:
+        bl main"
+);
 
 // GPIO
 const GPIO_BASE_P0: u32 = 0x50000000;
@@ -37,21 +55,19 @@ const COL1: u32 = 28;
 const _ROW3: u32 = 15;
 const _COL3: u32 = 31;
 
-fn uart_send(x: u32) {
+// Can send 8 bits at once
+fn uart_send(x: u8) {
     unsafe {
         while read_volatile(UART_TXREADY) == 0 {}
         write_volatile(UART_TXREADY, 0);
-        write_volatile(UART_TXD, x);
+        write_volatile(UART_TXD, x as u32);
     }
 }
 
-// The `#[entry]` attribute macro is provided by the `cortex_m_rt` crate as a program entry point *after* static variable have been initialised.
-#[cortex_m_rt::entry]
-// The entry point is not allowed to return.
-fn entry_point() -> ! {
-    // let mut board = Board::take().unwrap();
-    // board.display_pins.col3.set_low().unwrap();
-    // board.display_pins.row3.set_high().unwrap();
+#[export_name = "main"]
+pub unsafe extern "C" fn entry_point() {
+    //#[cortex_m_rt::entry]
+    //fn entry() -> ! {
     unsafe {
         write_volatile(DIRSET_P0, 1 << ROW1);
         write_volatile(DIRSET_P0, 1 << COL1);
@@ -62,12 +78,15 @@ fn entry_point() -> ! {
         // UART
         write_volatile(DIRSET_P1, 1 << 8);
         write_volatile(BAUD, 0x01D7E000);
-        write_volatile(UART_PINSELTXD, 0x28);
+        write_volatile(UART_PINSELTXD, 0x00000000 | (1 << 5) | 8);
         write_volatile(UART_ENABLE, 4);
         write_volatile(UART_STARTTX, 1);
         write_volatile(UART_TXD, 0x00);
     }
     loop {
+        // Any `char` in Rust can be represented by 4 bytes.
+        // let mut buffer = [0_u8; 4];
+        // let c = 'h'.encode_utf8(&buffer);
         uart_send(0x30 + (1 & 7));
     }
 }
